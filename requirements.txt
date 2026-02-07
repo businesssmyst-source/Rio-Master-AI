@@ -4,3 +4,5 @@ requests
 psutil
 pygame
 SpeechRecognition
+PyMuPDF
+Pillow

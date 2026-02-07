@@ -1,10 +1,15 @@
 import streamlit as st
 import os
 import json
+import openai
 from brain import ask_rio
 from emergency import get_emergency_report
 from analyst import read_pdf, read_image_info
 from manager import manage_trade, update_balance
+
+# --- 🧠 BRAIN ACTIVATION: CONNECTING TO CLOUD SECRETS ---
+# This line reaches into your "Secrets" vault to wake up Rio's AI brain
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # --- 1. PERMANENT DATA STORAGE ---
 CONTACTS_FILE = "contacts.txt"
@@ -105,6 +110,7 @@ if user_input:
 
     # 3. AI Brain Logic
     else:
+        # Rio uses the brain mode selected to formulate an AI response
         response = ask_rio(f"In {mode} mode, answer this: {user_input}")
         st.chat_message("assistant").write(response)
     
@@ -112,7 +118,6 @@ if user_input:
     if os.path.exists("rio_voice.mp3"):
         with open("rio_voice.mp3", "rb") as f:
             audio_bytes = f.read()
-            # Standard player prevents browser blocking
             st.audio(audio_bytes, format="audio/mp3")
 
 # --- 7. SAFETY VAULT ---
@@ -125,7 +130,6 @@ if st.button("🚨 ACTIVATE EMERGENCY SOS", type="primary", use_container_width=
 if st.session_state.sos_lock:
     st.markdown('<div class="emergency-box">', unsafe_allow_html=True)
     st.subheader("⚠️ SOS ACTIVE")
-    # Using your optimized report
     report = get_emergency_report(family_data)
     st.markdown(report)
     
@@ -133,5 +137,6 @@ if st.session_state.sos_lock:
         st.session_state.sos_lock = False
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 st.caption("RIO AI - High Performance Safety & Productivity System | Founder: Koushik Debnath")
